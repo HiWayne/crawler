@@ -1,0 +1,20 @@
+{
+  "name": "crawler",
+  "version": "1.0.0",
+  "description": "crawler",
+  "main": "index.js",
+  "scripts": {
+    "server": "node crawler",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "web",
+    "crawler"
+  ],
+  "author": "tianyu",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "puppeteer": "^1.20.0"
+  }
+}
