@@ -5,6 +5,8 @@ const utils = require("../helper/utils");
 const site = "https://www.duitang.com";
 const keyword = "周杰伦";
 
+const devices = require("puppeteer/DeviceDescriptors");
+
 (async () => {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
@@ -19,8 +21,7 @@ const keyword = "周杰伦";
   writeKeyword(page);
   async function writeKeyword(page) {
     await page.type("#kw", keyword, { delay: 20 });
-    const clickButton = await page.$("#dt-search>form>button");
-    clickButton.click();
+    await page.click(".content-detail .dynamic-feed-item .user-info>a");
     $console.success("start search...");
     //getSearchResult(page);
   }
