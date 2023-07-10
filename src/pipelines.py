@@ -5,6 +5,8 @@
 
 
 # useful for handling different item types with a single interface
+import json
+import os
 from itemadapter.adapter import ItemAdapter
 import re
 import requests
@@ -40,4 +42,23 @@ class HousePriceCrawlerPipeline:
                     min_item = min(json2["result"]["routes"],
                                    key=compare_by_distance)
                     adapter["distance"] = min_item["distance"]
+        return item
+
+
+class IpsCrawlerPipeline:
+    def open_spider(self, spider):
+        self.file = open("./src/spiders/ips.json", "a+")
+        if not self.file.read().startswith('['):
+            self.file.write("[")
+
+    def close_spider(self, spider):
+        if self.file.read().endswith(','):
+            self.file.seek(-1, os.SEEK_END)
+            self.file.truncate()
+            self.file.write("\n]")
+            self.file.close()
+
+    def process_item(self, item, spider):
+        line = "\n" + json.dumps(ItemAdapter(item).asdict()) + ","
+        self.file.write(line)
         return item

@@ -1,4 +1,4 @@
-# Scrapy settings for house_price_crawler project
+# Scrapy settings for whole project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,18 +7,18 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "house_price_crawler"
+BOT_NAME = "crawler"
 
-SPIDER_MODULES = ["house_price_crawler.spiders"]
-NEWSPIDER_MODULE = "house_price_crawler.spiders"
+SPIDER_MODULES = ["src.spiders"]
+NEWSPIDER_MODULE = "src.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = "house_price_crawler (+http://www.yourdomain.com)"
+# USER_AGENT = "crawler (+http://www.yourdomain.com)"
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
@@ -46,14 +46,14 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    "house_price_crawler.middlewares.HousePriceCrawlerSpiderMiddleware": 543,
+#    "src.middlewares.HousePriceCrawlerSpiderMiddleware": 543,
 # }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    "house_price_crawler.middlewares.HousePriceCrawlerDownloaderMiddleware": 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   "src.middlewares.RandomUAMiddleware": 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -64,10 +64,11 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # ITEM_PIPELINES = {
-#    "house_price_crawler.pipelines.HousePriceCrawlerPipeline": 300,
+#    "src.pipelines.HousePriceCrawlerPipeline": 300,
 # }
 ITEM_PIPELINES = {
-    "house_price_crawler.pipelines.HousePriceCrawlerPipeline": 300,
+    "src.pipelines.HousePriceCrawlerPipeline": 300,
+    "src.pipelines.IpsCrawlerPipeline": 300
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

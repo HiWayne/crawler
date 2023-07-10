@@ -1,6 +1,6 @@
 import scrapy
 
-from house_price_crawler.items import HousePriceCrawlerItem
+from src.items import HousePriceCrawlerItem
 
 
 class AnjukeSpider(scrapy.Spider):
@@ -16,9 +16,9 @@ class AnjukeSpider(scrapy.Spider):
             item["name"] = house.css(
                 "p.property-content-info-comm-name::text").get()
             item["price"] = house.css(
-                "p.property-price-average::text").extract_first()
+                "p.property-price-average::text").extract()[0]
             item["address"] = "上海市{}{}{}".format(house.css(
                 'p.property-content-info-comm-address > span:nth-child(1)::text').get(), house.css('p.property-content-info-comm-address > span:nth-child(2)::text').get(), house.css('p.property-content-info-comm-address > span:nth-child(3)::text').get())
             item["construction_time"] = house.css(
-                "div.property-content-detail section > div.property-content-info > p.property-content-info-text:nth-child(5)::text").extract_first()
+                "div.property-content-detail section > div.property-content-info > p.property-content-info-text:nth-child(5)::text").extract()[0]
             yield item
