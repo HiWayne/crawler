@@ -1,3 +1,5 @@
+import base64
+import re
 from time import sleep
 import requests
 import scrapy
@@ -6,29 +8,37 @@ from src.items import IpItem
 
 
 class IpsSpider(scrapy.Spider):
-    start_page = 400
+    start_page = 8
     current_page = start_page
-    end_page = 1000
+    end_page = 20
     name = "ips"
-    allowed_domains = ["kuaidaili.com"]
-    start_urls = [f"https://www.kuaidaili.com/free/inha/{start_page}/"]
+    allowed_domains = ["beesproxy.com"]
+    start_urls = [f"https://www.beesproxy.com/free/page/{current_page}"]
 
     def parse(self, response):
         sel = scrapy.Selector(response)
         trs = sel.css(
-            "table.table.table-b.table-bordered.table-striped > tbody > tr")
+            "table.table.table-bordered.bg--secondary > tbody > tr")
         for ip_element in trs:
-            ip = ip_element.css("td[data-title=IP]::text").get()
-            port = ip_element.css("td[data-title=PORT]::text").get()
-            anonymity = ip_element.css("td[data-title=匿名度]::text").get()
-            type = ip_element.css("td[data-title=类型]::text").get()
-            address = ip_element.css("td[data-title=位置]::text").get()
-            speed = ip_element.css("td[data-title=响应速度]::text").get()
+            ip = ip_element.css("td:nth-child(1)::text").get()
+            port = ip_element.css("td:nth-child(2)::text").get()
+            anonymity = ip_element.css(
+                "td:nth-child(4)::text").get()
+            type = ip_element.css("td:nth-child(5)::text").get()
+            address = ip_element.css("td:nth-child(3)::text").get()
+            speed = ""
             try:
-                proxy_ip = {
-                    "http": f"{ip}:{port}",
-                    "https": f"{ip}:{port}"
-                }
+                if (type == "socks5" or type == "SOCKS5"):
+                    print("is matching socks5")
+                    proxy_ip = {
+                        "http": f"sock5://{ip}:{port}",
+                        "https": f"sock5://{ip}:{port}"
+                    }
+                else:
+                    proxy_ip = {
+                        "http": f"{ip}:{port}",
+                        "https": f"{ip}:{port}"
+                    }
                 response_text = requests.get(
                     "http://www.baidu.com", proxies=proxy_ip, timeout=5).text
                 if response_text is not None:
@@ -65,7 +75,167 @@ class IpsSpider(scrapy.Spider):
                 yield item
         self.current_page += 1
         if self.current_page <= self.end_page:
-            next_url = sel.css(
-                "ul.v3__pagination.param-type-1 > li.v3__pagination-next > a::attr('href')").get()
-            if next_url is not None:
-                yield response.follow(next_url, self.parse)
+            # try:
+            #     next_url = sel.css(
+            #         "ul.pagination > li:last-child > a::attr('href')").get()
+            #     if next_url is not None:
+            #         yield response.follow(next_url, self.parse)
+            #     else:
+            #         print("no href, end")
+            # except:
+            #     print("no a, end")
+            yield response.follow(f"https://www.beesproxy.com/free/page/{self.current_page}", self.parse)
+
+# 小幻代理
+# class IpsSpider(scrapy.Spider):
+#     start_page = 1
+#     current_page = start_page
+#     end_page = 1000
+#     name = "ips"
+#     allowed_domains = ["ihuan.me"]
+#     start_urls = [f"https://ip.ihuan.me/?page=came0299"]
+
+#     def parse(self, response):
+#         sel = scrapy.Selector(response)
+#         trs = sel.css(
+#             "table.table.table-hover.table-bordered > tbody > tr")
+#         for ip_element in trs:
+#             ip = ip_element.css("td:nth-child(1) > a::text").get()
+#             port = ip_element.css("td:nth-child(2)::text").get()
+#             anonymity = ip_element.css(
+#                 "td:nth-child(7) > small::text").get()
+#             type = "https" if ip_element.css(
+#                 "td:nth-child(5) > small::text").get() == "支持" else "http"
+#             address = ip_element.css("td:nth-child(3) > a::text").get()
+#             speed = ip_element.css("td:nth-child(8)::text").get()
+#             try:
+#                 if (type == "socks5" or type == "SOCKS5"):
+#                     print("is matching socks5")
+#                     proxy_ip = {
+#                         "http": f"sock5://{ip}:{port}",
+#                         "https": f"sock5://{ip}:{port}"
+#                     }
+#                 else:
+#                     proxy_ip = {
+#                         "http": f"{ip}:{port}",
+#                         "https": f"{ip}:{port}"
+#                     }
+#                 response_text = requests.get(
+#                     "http://www.baidu.com", proxies=proxy_ip, timeout=5).text
+#                 if response_text is not None:
+#                     item = IpItem()
+#                     item["ip"] = ip
+#                     item["port"] = port
+#                     item["anonymity"] = anonymity
+#                     item["type"] = type
+#                     item["address"] = address
+#                     item["speed"] = speed
+#                     item["active"] = True
+#                     yield item
+#                 else:
+#                     print(f'当前IP无效(返回空): {ip}:{port}')
+#                     item = IpItem()
+#                     item["ip"] = ip
+#                     item["port"] = port
+#                     item["anonymity"] = anonymity
+#                     item["type"] = type
+#                     item["address"] = address
+#                     item["speed"] = speed
+#                     item["active"] = False
+#                     yield item
+#             except Exception as e:
+#                 print(f'当前IP无效: {ip}:{port}')
+#                 item = IpItem()
+#                 item["ip"] = ip
+#                 item["port"] = port
+#                 item["anonymity"] = anonymity
+#                 item["type"] = type
+#                 item["address"] = address
+#                 item["speed"] = speed
+#                 item["active"] = False
+#                 yield item
+#         self.current_page += 1
+#         if self.current_page <= self.end_page:
+#             try:
+#                 next_url = sel.css(
+#                     "ul.pagination > li:last-child > a::attr('href')").get()
+#                 if next_url is not None:
+#                     yield response.follow(next_url, self.parse)
+#                 else:
+#                     print("no href, end")
+#             except:
+#                 print("no a, end")
+
+# 站大爷
+
+# class IpsSpiderZDaYe(scrapy.Spider):
+#     start_page = 1
+#     current_page = start_page
+#     end_page = 1000
+#     name = "ips"
+#     allowed_domains = ["zdaye.com"]
+#     start_urls = [f"https://www.zdaye.com/dayProxy/ip/335035/"]
+
+#     def parse(self, response):
+#         sel = scrapy.Selector(response)
+#         trs = sel.css(
+#             "table#ipc > tbody > tr")
+#         for ip_element in trs:
+#             ip = re.sub(r'[^\d.]', "", ip_element.css(
+#                 "td:nth-child(1)::text").get())
+#             port = re.sub(r'[^\d]', "", ip_element.css(
+#                 "td:nth-child(2)::text").get())
+#             anonymity = ip_element.css("td:nth-child(4)::text").get()
+#             type = ip_element.css("td:nth-child(3)::text").get()
+#             address = ip_element.css("td:nth-child(5)::text").get()
+#             speed = ""
+#             try:
+#                 proxy_ip = {
+#                     "http": f"{ip}:{port}",
+#                     "https": f"{ip}:{port}"
+#                 }
+#                 response_text = requests.get(
+#                     "http://www.baidu.com", proxies=proxy_ip, timeout=5).text
+#                 if response_text is not None:
+#                     item = IpItem()
+#                     item["ip"] = ip
+#                     item["port"] = port
+#                     item["anonymity"] = anonymity
+#                     item["type"] = type
+#                     item["address"] = address
+#                     item["speed"] = speed
+#                     item["active"] = True
+#                     yield item
+#                 else:
+#                     print(f'当前IP无效(返回空): {ip}:{port}')
+#                     item = IpItem()
+#                     item["ip"] = ip
+#                     item["port"] = port
+#                     item["anonymity"] = anonymity
+#                     item["type"] = type
+#                     item["address"] = address
+#                     item["speed"] = speed
+#                     item["active"] = False
+#                     yield item
+#             except Exception as e:
+#                 print(f'当前IP无效: {ip}:{port}')
+#                 item = IpItem()
+#                 item["ip"] = ip
+#                 item["port"] = port
+#                 item["anonymity"] = anonymity
+#                 item["type"] = type
+#                 item["address"] = address
+#                 item["speed"] = speed
+#                 item["active"] = False
+#                 yield item
+#         self.current_page += 1
+#         if self.current_page <= self.end_page:
+#             try:
+#                 next_url = sel.css(
+#                     "div.page > a.layui-btn.layui-btn-xs[title=下一页]::attr('href')").get()
+#                 if next_url is not None:
+#                     yield response.follow(next_url, self.parse)
+#                 else:
+#                     print("no href, end")
+#             except:
+#                 print("no a, end")

@@ -17,6 +17,7 @@ class HousePriceCrawlerPipeline:
     destination_lng = 121.481176
 
     def process_item(self, item, spider):
+        print("++++++++test++++++++")
         adapter = ItemAdapter(item)
         if adapter.get("price"):
             adapter["price"] = re.findall(r"\d+", adapter["price"])
@@ -47,16 +48,10 @@ class HousePriceCrawlerPipeline:
 
 class IpsCrawlerPipeline:
     def open_spider(self, spider):
-        self.file = open("./src/spiders/ips.json", "a+")
-        if not self.file.read().startswith('['):
-            self.file.write("[")
+        self.file = open("./src/spiders/ips_beesproxy.json", "a+")
 
     def close_spider(self, spider):
-        if self.file.read().endswith(','):
-            self.file.seek(-1, os.SEEK_END)
-            self.file.truncate()
-            self.file.write("\n]")
-            self.file.close()
+        self.file.close()
 
     def process_item(self, item, spider):
         line = "\n" + json.dumps(ItemAdapter(item).asdict()) + ","

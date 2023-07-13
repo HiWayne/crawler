@@ -1,6 +1,6 @@
 import json
 
-file = open("./src/spiders/ips.json", 'r')
+file = open("./src/spiders/ips_ihuan.json", 'r')
 ips = json.loads(file.read())
 
 
@@ -12,12 +12,12 @@ activeAddress = []
 
 for item in ips:
     if (item["active"]):
-        activeAddress.append(f"{item['ip']}:{item['port']}")
+        activeAddress.append(
+            f"{item['type'].lower()}://{item['ip']}:{item['port']}".lower())
 
 activeAddress = list(set(activeAddress))
 
-newFile = open("./addresses.py", 'a+')
-newFile.write("addresses = [")
+newFile = open("./src/ipPool.py", 'a+')
+
 for address in activeAddress:
     newFile.write(f'\n"{address}",')
-newFile.write("\n]")

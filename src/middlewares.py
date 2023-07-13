@@ -3,9 +3,12 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import random
+from time import time
 from scrapy import signals
 
 from fake_useragent import UserAgent
+from src.ipPool import ipPool
 
 # useful for handling different item types with a single interface
 # from itemadapter import is_item, ItemAdapter
@@ -111,3 +114,10 @@ class RandomUAMiddleware(object):
 
     def process_request(self, request, spider):
         request.headers['User-Agent'] = self.user_agent
+
+
+class ProxyMiddleware(object):
+    def process_request(self, request, spider):
+        radomIpAddress = random.choice(ipPool)
+        print(f"++++++++proxy ip address++++++++, {radomIpAddress}")
+        request.meta["proxy"] = radomIpAddress

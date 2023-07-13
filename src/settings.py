@@ -52,7 +52,8 @@ ROBOTSTXT_OBEY = False
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   "src.middlewares.RandomUAMiddleware": 543,
+    "src.middlewares.RandomUAMiddleware": 543,
+    # "src.middlewares.ProxyMiddleware": 125
 }
 
 # Enable or disable extensions
@@ -67,7 +68,7 @@ DOWNLOADER_MIDDLEWARES = {
 #    "src.pipelines.HousePriceCrawlerPipeline": 300,
 # }
 ITEM_PIPELINES = {
-    "src.pipelines.HousePriceCrawlerPipeline": 300,
+    # "src.pipelines.HousePriceCrawlerPipeline": 300,
     "src.pipelines.IpsCrawlerPipeline": 300
 }
 
@@ -96,3 +97,8 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+RETRY_ENABLED = True
+RETRY_TIMES = 9999
+DOWNLOAD_TIMEOUT = 20
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 400, 401, 403]
