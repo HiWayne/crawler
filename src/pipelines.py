@@ -48,7 +48,7 @@ class HousePriceCrawlerPipeline:
 
 class IpsCrawlerPipeline:
     def open_spider(self, spider):
-        self.file = open("./src/spiders/ips_beesproxy.json", "a+")
+        self.file = open("./src/spiders/ips_89ip.json", "a+")
 
     def close_spider(self, spider):
         self.file.close()

@@ -1,6 +1,6 @@
 import json
 
-file = open("./src/spiders/ips_ihuan.json", 'r')
+file = open("./src/spiders/ips_ip3366.json", 'r')
 ips = json.loads(file.read())
 
 

@@ -53,7 +53,7 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "src.middlewares.RandomUAMiddleware": 543,
-    # "src.middlewares.ProxyMiddleware": 125
+    "src.middlewares.ProxyMiddleware": 125
 }
 
 # Enable or disable extensions
@@ -101,4 +101,4 @@ FEED_EXPORT_ENCODING = "utf-8"
 RETRY_ENABLED = True
 RETRY_TIMES = 9999
 DOWNLOAD_TIMEOUT = 20
-RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 400, 401, 403]
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 400, 401, 403, 404]
